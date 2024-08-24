@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up</title>
+    <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+    <header>
+        <h1>Sign Up</h1>
+    </header>
+    <main>
+        <section id="sign-up-form">
+            <h2>Create an Account</h2>
+
+            <!-- Display any general form errors -->
+            <% if (errors && errors.length > 0) { %>
+                <div class="error-messages">
+                    <ul>
+                        <% errors.forEach(error => { %>
+                            <li><%= error.msg %></li>
+                        <% }); %>
+                    </ul>
+                </div>
+            <% } %>
+
+            <form action="/sign-up" method="POST">
+                <label for="first_name">First Name:</label>
+                <input type="text" id="first_name" name="first_name" value="<%= formData ? formData.first_name : '' %>" required>
+                
+                <label for="last_name">Last Name:</label>
+                <input type="text" id="last_name" name="last_name" value="<%= formData ? formData.last_name : '' %>" required>
+                
+                <label for="username">Username (Email):</label>
+                <input type="email" id="username" name="username" value="<%= formData ? formData.username : '' %>" required>
+                <!-- Display error for username -->
+                <% if (errors && errors.find(e => e.param === 'username')) { %>
+                    <span class="error"><%= errors.find(e => e.param === 'username').msg %></span>
+                <% } %>
+
+                <label for="password">Password:</label>
+                <input type="password" id="password" name="password" required>
+                <!-- Display error for password -->
+                <% if (errors && errors.find(e => e.param === 'password')) { %>
+                    <span class="error"><%= errors.find(e => e.param === 'password').msg %></span>
+                <% } %>
+
+                <label for="confirm_password">Confirm Password:</label>
+                <input type="password" id="confirm_password" name="confirm_password" required>
+                <!-- Display error for confirm password -->
+                <% if (errors && errors.find(e => e.param === 'confirm_password')) { %>
+                    <span class="error"><%= errors.find(e => e.param === 'confirm_password').msg %></span>
+                <% } %>
+
+                <button type="submit">Sign Up</button>
+            </form>
+        </section>
+    </main>
+</body>
+</html>
