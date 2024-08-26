@@ -3,7 +3,7 @@ const bcrypt = require('bcryptjs');
 const db = require("../db/pool");
 const { render } = require("ejs");
 
-function getHomePage(req, res){
+function getIndexPage(req, res){
     res.render("index");
 };
 
@@ -67,40 +67,58 @@ function getLoginPage(req, res) {
     res.render("log-in", { errors: [], formData: {}, successMessage });
 }
 
-async function postLogInPage(req, res) {
-    const username = req.body.username;
-    const password = req.body.password;
-
+async function getHomePage(req, res) {
+    const membership_status = req.user?.membership_status || false; // Default to false if not available
     try {
-        // Query to get the hashed password from the database
-        const result = await db.query("SELECT password FROM users WHERE username = $1", [username]);
+        const result = await db.query("SELECT * FROM messages");
+        const messages = result.rows;
+        res.render("homePage", { membership_status, messages });
+    } catch (err) {
+        console.error("ERROR:", err);
+        res.render("homePage", { membership_status, messages: [] });
+    }
+}
 
-        if (result.rows.length === 0) {
-            // No user found with the provided username
-            return res.render("log-in", { errors: [{ msg: 'Invalid username or password' }], formData: req.body, successMessage: "" });
+async function memberSignInGet(req, res) {
+    try {
+        const result = await db.query("SELECT * FROM messages");
+        const messages = result.rows;
+        res.render("memberSignIn", { messages });
+    } catch (err) {
+        console.error("ERROR:", err);
+        res.render("memberSignIn", { messages: [], errors: [{ msg: 'An error occurred while fetching messages.' }] });
+    }
+}
+
+async function memberSignInPost(req, res) {
+    const { password } = req.body; // Assuming password is sent in the body
+    const user = req.user;
+    console.log(user);
+    try {
+        const result = await db.query("SELECT password FROM member_password"); 
+        const memberPassword = result.rows[0]?.password;
+
+        if (memberPassword === password) {
+            // Update membership status if password matches
+            await db.query("UPDATE users SET membership_status = true WHERE user_id = $1", [user.user_id]);
+            res.redirect("/homePage");
+        } else {
+            // Handle incorrect password or missing user
+            res.render("memberSignIn", { errors: [{ msg: 'Incorrect password or user not found.' }] });
         }
-
-        const hashedPassword = result.rows[0].password;
-
-        // Compare provided password with the hashed password
-        const isMatch = await bcrypt.compare(password, hashedPassword);
-
-        if (!isMatch) {
-            return res.render("log-in", { errors: [{ msg: 'Invalid username or password' }], formData: req.body, successMessage: "" });
-        }
-        res.redirect("/homePage");
-
-    } catch (error) {
-        console.error("ERROR:", error);
-        res.render("log-in", { errors: [{ msg: 'An error occurred during login' }], formData: req.body, successMessage: "" });
+    } catch (err) {
+        console.error(err);
+        res.render("memberSignIn", { errors: [{ msg: 'An error occurred. Please try again.' }] });
     }
 }
 
 
 module.exports = {
-    getHomePage,
+    getIndexPage,
     getLoginPage,
     getSignUpPage,
     postSignUpPage,
-    postLogInPage
+    getHomePage,
+    memberSignInGet, 
+    memberSignInPost
 }

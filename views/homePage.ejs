@@ -3,9 +3,38 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Home page</title>
+    <title>Home Page</title>
+    <link rel="stylesheet" href="/homePage.css"> 
 </head>
 <body>
-    <h1>Home page</h1>
+    <header>
+        <h1>Welcome to Your Home Page</h1>
+        <nav>
+            <ul>
+                <li><a href="/log-out">Log Out</a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        <section id="welcome-section">
+            <h2>Welcome Back!</h2>
+            <p>We are glad to see you here. Explore our features and enjoy your time.</p>
+        </section>
+        <section>
+            <ul>
+                <% messages.forEach(message => { %>
+                    <li><%= message.text %></li>
+                <% }) %>
+            </ul>
+        </section>
+        <% if (membership_status === false) { %>
+            <section id="member-message">
+                <p>You are not a member. Click <a href="/memberSignIn"><b>here</b></a> to become one.</p>
+            </section>
+        <% } %>
+    </main>
+    <footer>
+        <p>&copy; 2024 Your Company. All rights reserved.</p>
+    </footer>
 </body>
 </html>

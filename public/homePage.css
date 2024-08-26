@@ -1,0 +1,88 @@
+/* Reset some default styles */
+body, h1, h2, p, ul, li {
+    margin: 0;
+    padding: 0;
+}
+
+/* Body styling */
+body {
+    font-family: Arial, sans-serif;
+    line-height: 1.6;
+    background-color: #f9f9f9; /* Very light gray for background */
+    color: #333; /* Dark gray for text */
+    padding: 0;
+}
+
+/* Header styling */
+header {
+    background: #000; /* Black background */
+    color: #fff; /* White text */
+    padding: 1rem 0;
+    text-align: center;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+header h1 {
+    margin: 0;
+    font-size: 2rem;
+}
+
+nav ul {
+    list-style: none;
+    padding: 0;
+    margin-top: 0.5rem;
+}
+
+nav ul li {
+    display: inline;
+    margin: 0 10px;
+}
+
+nav ul li a {
+    color: #fff;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+nav ul li a:hover {
+    text-decoration: underline;
+}
+
+/* Main content styling */
+main {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: calc(100vh - 100px); /* Adjust based on header/footer height */
+    padding: 1rem;
+}
+
+#welcome-section {
+    background: #fff; /* White background for section */
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    max-width: 500px;
+    width: 100%;
+}
+
+#welcome-section h2 {
+    color: #333; /* Dark gray for heading */
+    margin-bottom: 1rem;
+}
+
+#welcome-section p {
+    color: #666; /* Medium gray for paragraph text */
+}
+
+/* Footer styling */
+footer {
+    background: #000; /* Black background */
+    color: #fff; /* White text */
+    padding: 1rem;
+    text-align: center;
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+}
