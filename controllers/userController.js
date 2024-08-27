@@ -26,22 +26,19 @@ async function postSignUpPage(req, res) {
     if (!errors.isEmpty()) {
         return res.render('sign-up', {
             errors: errors.array(),
-            formData: req.body       // Pass the form data to keep input values
+            formData: req.body     
         });
     }
 
     try {
-        // Check if username already exists
         const result = await db.query("SELECT * FROM users WHERE username = $1", [req.body.username]);
         if (result.rows.length > 0) {
-            // Username exists
             return res.render('sign-up', {
                 errors: [{ msg: 'Username already exists' }],
-                formData: req.body       // Pass the form data to keep input values
+                formData: req.body     
             });
         }
 
-        // Hash the password and insert new user
         const hashedPassword = await bcrypt.hash(req.body.password, 10);
         await db.query("INSERT INTO users (first_name, last_name, username, password, membership_status) VALUES ($1, $2, $3, $4, $5)", [
             req.body.first_name,
@@ -56,21 +53,20 @@ async function postSignUpPage(req, res) {
         console.error("ERROR:", err);
         res.render('sign-up', {
             errors: [{ msg: 'An error occurred during sign up. Please try again.' }],
-            formData: req.body       // Pass the form data to keep input values
+            formData: req.body     
         });
     }
 }
 
 function getLoginPage(req, res) {
-    // Check for query parameters to display messages
     const successMessage = req.query.signup === 'success' ? 'Account created successfully! Please log in.' : '';
-    res.render("log-in", { errors: [], formData: {}, successMessage });
+    res.render("log-in", { message: [], formData: [], successMessage });
 }
 
 async function getHomePage(req, res) {
-    const membership_status = req.user?.membership_status || false; // Default to false if not available
+    const membership_status = req.user?.membership_status || false;
     try {
-        const result = await db.query("SELECT * FROM messages");
+        const result = await db.query("SELECT * FROM messages JOIN users ON messages.user_id = users.user_id");
         const messages = result.rows;
         res.render("homePage", { membership_status, messages });
     } catch (err) {

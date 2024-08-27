@@ -24,6 +24,7 @@ const db = require('../db/pool');
           try {
             const { rows } = await db.query("SELECT * FROM users WHERE username = $1", [username]);
             const user = rows[0];
+            console.log(user);
             if (!user) {
               return done(null, false, { message: "Incorrect username" });
             }

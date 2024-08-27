@@ -8,24 +8,23 @@
 </head>
 <body>
     <header>
-        <h1>Welcome to Your Home Page</h1>
+        <h1>Your Home Page</h1>
         <nav>
-            <ul>
-                <li><a href="/log-out">Log Out</a></li>
-            </ul>
+                <a href="/log-out">Log Out</a></li>
         </nav>
     </header>
     <main>
-        <section id="welcome-section">
-            <h2>Welcome Back!</h2>
-            <p>We are glad to see you here. Explore our features and enjoy your time.</p>
-        </section>
-        <section>
-            <ul>
-                <% messages.forEach(message => { %>
-                    <li><%= message.text %></li>
-                <% }) %>
-            </ul>
+        <section id="messages">
+            <% messages.forEach(message => { %>
+                <div class="message-box">
+                    <h3><%= message.title %></h3>
+                    <p><%= message.text %></p>
+                    <% if (membership_status === true) { %>
+                        <p class="message-author">Author: <%= message.first_name %> <%= message.last_name %></p>
+                        <p class="message-date">Created on: <%= message.created_at %></p>
+                    <% } %>
+                </div>
+            <% }) %>
         </section>
         <% if (membership_status === false) { %>
             <section id="member-message">

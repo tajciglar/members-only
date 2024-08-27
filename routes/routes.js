@@ -10,11 +10,28 @@ router.get("/", userController.getIndexPage);
 router.get("/log-in", userController.getLoginPage);
 router.post(
     "/log-in",
-    passport.authenticate("local", {
-        successRedirect: "/homePage",
-        failureRedirect: "/log-in",
-    })
+    (req, res, next) => {
+        passport.authenticate("local", (err, user, info) => {
+            if (err) {
+                return next(err); 
+            }
+            if (!user) {
+                return res.render("log-in", {
+                    message: info.message, 
+                    formData: req.body,    
+                    successMessage: ""     
+                });
+            }
+            req.logIn(user, (err) => {
+                if (err) {
+                    return next(err);
+                }
+                return res.redirect("/homePage");
+            });
+        })(req, res, next);
+    }
 );
+
 
 router.get("/sign-up", userController.getSignUpPage);
 router.post("/sign-up", userController.postSignUpPage);
