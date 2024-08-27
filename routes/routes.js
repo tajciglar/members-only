@@ -32,12 +32,12 @@ router.post(
     }
 );
 
-
 router.get("/sign-up", userController.getSignUpPage);
 router.post("/sign-up", userController.postSignUpPage);
 
 
 router.get("/homePage", isAuthenticated, userController.getHomePage);
+router.post("/add-message", isAuthenticated, userController.addMessage);
 
 router.get("/memberSignIn", isAuthenticated, userController.memberSignInGet);
 router.post("/memberSignIn", isAuthenticated, userController.memberSignInPost);
@@ -51,5 +51,7 @@ router.get("/log-out", (req, res, next) => {
         res.redirect("/");
     });
 });
+
+router.post('/delete/:message_id', isAuthenticated, userController.deleteMessage);
 
 module.exports = router;

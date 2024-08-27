@@ -64,16 +64,45 @@ function getLoginPage(req, res) {
 }
 
 async function getHomePage(req, res) {
-    const membership_status = req.user?.membership_status || false;
     try {
-        const result = await db.query("SELECT * FROM messages JOIN users ON messages.user_id = users.user_id");
+        const result = await db.query(`
+            SELECT 
+                messages.message_id,
+                messages.user_id,
+                messages.title,
+                messages.text,
+                messages.created_at,
+                users.first_name,
+                users.last_name
+            FROM 
+                messages 
+            JOIN 
+                users 
+            ON 
+                messages.user_id = users.user_id
+        `);        
         const messages = result.rows;
-        res.render("homePage", { membership_status, messages });
+        res.render("homePage", { user: req.user, messages });
     } catch (err) {
         console.error("ERROR:", err);
-        res.render("homePage", { membership_status, messages: [] });
+        res.render("homePage", { user: req.user, messages: [] });
     }
 }
+
+async function addMessage(req, res) {
+    const { title, text} = req.body;
+    const user = req.user.username;
+    const date = new Date();
+    try {
+        const user_id = await db.query("SELECT user_id FROM users WHERE username = $1", [user]);
+        await db.query("INSERT INTO messages (user_id, title, text, created_at) VALUES ($1, $2, $3, $4)", [user_id.rows[0].user_id, title, text, date]);
+        res.redirect("/homePage");
+    } catch (err) {
+        console.error(err);
+        res.redirect("/homePage");
+    }
+}
+
 
 async function memberSignInGet(req, res) {
     try {
@@ -89,7 +118,7 @@ async function memberSignInGet(req, res) {
 async function memberSignInPost(req, res) {
     const { password } = req.body; // Assuming password is sent in the body
     const user = req.user;
-    console.log(user);
+    
     try {
         const result = await db.query("SELECT password FROM member_password"); 
         const memberPassword = result.rows[0]?.password;
@@ -109,12 +138,25 @@ async function memberSignInPost(req, res) {
 }
 
 
+async function deleteMessage(req, res) {
+    const message_id = req.params.message_id;
+    try {
+        await db.query("DELETE FROM messages WHERE message_id = $1", [message_id]);
+        res.redirect("/homePage");
+    } catch (err) {
+        console.error(err);
+        res.redirect("/homePage");
+    }
+}
+
 module.exports = {
     getIndexPage,
     getLoginPage,
     getSignUpPage,
     postSignUpPage,
+    addMessage,
     getHomePage,
     memberSignInGet, 
-    memberSignInPost
+    memberSignInPost,
+    deleteMessage
 }
